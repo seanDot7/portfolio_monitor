@@ -1,0 +1,5 @@
+# Referenced when use sdist command. It specifies which parts will be included or excluded.
+
+# include *.py
+# include README.md
+# exclude *.pyc

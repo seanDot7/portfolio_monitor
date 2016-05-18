@@ -5,11 +5,18 @@ $(document).ready(function() {
     // useCurrent: true
   });
 
-  $.get('/positions', {accountId: 1, date: 1, stats: 1})
-    .done(function(stats) {
-      $('#marketValue').text(stats.marketValue);
-    });
-  $.get('/positions', {accountId: 1, date: 1})
+  $('#dropdownAccounts .dropdown-menu li a').on('click', function(e) {
+    $('#dropdownAccounts button .dropdown-title').text(this.innerText);
+  });
+
+  let getStats = function(options) {
+    $.get('/positions', {accountId: 1, date: 1, stats: 1})
+      .done(function(stats) {
+        $('#marketValue').text(stats.marketValue);
+      });
+  };
+  let getPosition = function(options) {
+    $.get('/positions', {accountId: 1, date: 1})
     .done(function(rawData) {
       try {
         let jsonData = JSON.parse(rawData);
@@ -28,18 +35,32 @@ $(document).ready(function() {
           return tempObj;
         });
 
-        $('#table').bootstrapTable({
-          columns: columns,
-          data: data
-        });
+        if (typeof(options) === 'object' && options.refresh) {
+          $('#table').bootstrapTable('refreshOptions', {
+            columns: columns,
+            data: data
+          });
+        } else {
+          $('#table').bootstrapTable({
+            columns: columns,
+            data: data
+          });
+        }
 
 
       } catch(e) {
         console.log('Error while parsing json data', e);
       }
     });
-  $('#dropdownAccounts .dropdown-menu li a').on('click', function(e) {
-    $('#dropdownAccounts button .dropdown-title').text(this.innerText);
-  });
+  };
+
+  getStats();
+  getPosition();
+  // Refresh data
+  let interval = 2 * 1000;
+  setInterval(function() {
+    getStats({accountId: 1, date: 1, refresh: true});
+    getPosition({accountId: 1, date: 1, refresh: true});
+  }, interval);
 
 });

@@ -36,9 +36,10 @@ $(document).ready(function() {
         });
 
         if (typeof(options) === 'object' && options.refresh) {
-          $('#table').bootstrapTable('refreshOptions', {
+          $('#table').bootstrapTable('load', {
             columns: columns,
-            data: data
+            data: data,
+            silent: true
           });
         } else {
           $('#table').bootstrapTable({
